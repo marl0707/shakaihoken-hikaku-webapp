@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人事業主向け社会保険料計算ツール【2025年度版】｜事業主共生連との比較</title>
+    <meta name="description" content="個人事業主の社会保険料を簡単計算。国民健康保険、国民年金、介護保険料と事業主共生連サービスの月額料金を比較。東京都葛飾区基準で2025年度最新版。">
+    <meta property="og:title" content="個人事業主向け社会保険料計算ツール【2025年度版】">
+    <meta property="og:description" content="国民健康保険、国民年金、介護保険料を簡単計算。事業主共生連サービスとの比較で最適な選択を。">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ja_JP">
+    
+    <!-- React and dependencies -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        /* Print styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                font-size: 12pt;
+            }
+            .print-break {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        // Make Lucide icons available globally
+        const { 
+            Calculator, 
+            Users, 
+            FileText, 
+            AlertCircle, 
+            Info, 
+            ChevronDown, 
+            ChevronUp, 
+            CheckCircle, 
+            XCircle, 
+            ExternalLink, 
+            Printer 
+        } = lucide;
+        
+        // Replace lucide-react imports with the global lucide icons
+        const LucideIcon = ({ icon: Icon, ...props }) => {
+            React.useEffect(() => {
+                Icon.replace();
+            }, []);
+            return <i {...props} data-lucide={Icon.name}></i>;
+        };
+    </script>
+    
+    <!-- Load the main app -->
+    <script type="text/babel" src="app.js"></script>
+    
+    <script type="text/babel">
+        // Mount the app
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<SocialInsuranceCalculator />);
+        
+        // Initialize Lucide icons after render
+        setTimeout(() => {
+            lucide.createIcons();
+        }, 100);
+        
+        // Reinitialize icons when React re-renders
+        const observer = new MutationObserver(() => {
+            lucide.createIcons();
+        });
+        observer.observe(document.getElementById('root'), { childList: true, subtree: true });
+    </script>
+</body>
+</html>
