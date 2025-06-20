@@ -1,5 +1,5 @@
-// Remove imports as they're not needed in browser environment
-// Icons are available from the global scope defined in index.html
+// Global React hooks
+const { useState } = React;
 
 // 定数定義（2025年度最新データ）
 const CONSTANTS = {
@@ -430,7 +430,7 @@ const DependentForm = ({
 const PersonalInsuranceTable = ({ results, income, spouse, spouseIncome }) => (
   <div className="mb-6 bg-white p-6 rounded shadow">
     <h3 className="font-semibold text-gray-700 mb-4 flex items-center">
-      <Users className="w-5 h-5 mr-2 text-blue-600" />
+      <i data-lucide="users" className="w-5 h-5 mr-2 text-blue-600"></i>
       個人別保険料詳細
     </h3>
     <div className="overflow-x-auto">
@@ -1173,6 +1173,11 @@ function SocialInsuranceCalculator() {
     }
   };
 
+  // useEffect to initialize Lucide icons
+  React.useEffect(() => {
+    lucide.createIcons();
+  });
+
   return (
     <div className="max-w-5xl mx-auto p-6 bg-gray-50 min-h-screen">
       <div className="bg-white rounded-lg shadow-lg p-8">
@@ -1316,7 +1321,7 @@ function SocialInsuranceCalculator() {
             
             {/* 注意事項 */}
             <div className="mt-4 flex items-start bg-yellow-50 p-4 rounded">
-              <AlertCircle className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" />
+              <i data-lucide="alert-circle" className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5"></i>
               <div className="text-sm text-gray-700">
                 <p className="font-semibold mb-1">重要な注意事項：</p>
                 <ul className="list-disc ml-5 space-y-1">
@@ -1334,4 +1339,5 @@ function SocialInsuranceCalculator() {
   );
 }
 
-export default SocialInsuranceCalculator;
+// Export is not needed in browser environment
+// export default SocialInsuranceCalculator;
