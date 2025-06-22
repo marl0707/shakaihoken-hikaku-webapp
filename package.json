@@ -2,7 +2,7 @@
   "name": "shakaihoken-hikaku-web-app",
   "version": "1.0.0",
   "description": "個人事業主向け社会保険料計算ツール",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
