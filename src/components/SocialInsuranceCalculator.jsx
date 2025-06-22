@@ -114,8 +114,12 @@ const BasicInfoForm = ({
   spouse, setSpouse,
   spouseAge, setSpouseAge,
   spouseIncome, setSpouseIncome,
-  childrenOver20InDependentRange, setChildrenOver20InDependentRange,
-  canProvideDependency, setCanProvideDependency
+  spouseInDependent, setSpouseInDependent,
+  childrenUnder20, setChildrenUnder20,
+  childrenOver20, setChildrenOver20,
+  childrenOver20InDependent, setChildrenOver20InDependent,
+  otherDependents, setOtherDependents,
+  otherDependentsInDependent, setOtherDependentsInDependent
 }) => {
   const spouseRangeInfo = getSpouseRangeInfo(spouse, spouseIncome, spouseAge);
 
@@ -141,7 +145,7 @@ const BasicInfoForm = ({
             value={income}
             onChange={(e) => setIncome(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-            placeholder="例: 5000000"
+            placeholder="3000000"
           />
           <p className="text-xs text-gray-500 mt-1">売上から経費を引いた金額（円）</p>
         </motion.div>
@@ -155,7 +159,7 @@ const BasicInfoForm = ({
             value={age}
             onChange={(e) => setAge(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-            placeholder="例: 45"
+            placeholder="45"
             min="20"
             max="100"
           />
@@ -233,7 +237,7 @@ const BasicInfoForm = ({
                   value={spouseAge}
                   onChange={(e) => setSpouseAge(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                  placeholder="例: 40"
+                  placeholder="40"
                   min="20"
                   max="100"
                 />
@@ -254,7 +258,7 @@ const BasicInfoForm = ({
                   value={spouseIncome}
                   onChange={(e) => setSpouseIncome(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                  placeholder="例: 100"
+                  placeholder="100"
                   min="0"
                 />
                 {spouseRangeInfo && (
@@ -267,54 +271,145 @@ const BasicInfoForm = ({
                   </motion.p>
                 )}
               </motion.div>
+
+              {spouseRangeInfo && spouseRangeInfo.isInRange && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  whileHover={{ scale: 1.01 }} 
+                  className="bg-white p-4 rounded-lg shadow-sm"
+                >
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={spouseInDependent}
+                      onChange={(e) => setSpouseInDependent(e.target.checked)}
+                      className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      配偶者を事業主共生連の扶養に入れる
+                    </span>
+                  </label>
+                  <p className="text-xs text-gray-500 mt-1">チェックすると扶養家族として計算されます</p>
+                </motion.div>
+              )}
             </>
           )}
         </AnimatePresence>
 
         <motion.div whileHover={{ scale: 1.01 }} className="bg-white p-4 rounded-lg shadow-sm">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            20歳以上の子供（扶養範囲内の人数）
+            子供（20歳未満）の人数
           </label>
           <input
             type="number"
-            value={childrenOver20InDependentRange}
-            onChange={(e) => setChildrenOver20InDependentRange(e.target.value)}
+            value={childrenUnder20}
+            onChange={(e) => setChildrenUnder20(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
             placeholder="0"
             min="0"
             max="10"
           />
-          <p className="text-xs text-gray-500 mt-1">年収130万円未満の成人子供の人数</p>
+          <p className="text-xs text-gray-500 mt-1">20歳未満の子供は自動的に扶養対象となります</p>
         </motion.div>
 
         <motion.div whileHover={{ scale: 1.01 }} className="bg-white p-4 rounded-lg shadow-sm">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            扶養可能な家族（両親・その他）
+            子供（20歳以上）の人数
           </label>
           <input
             type="number"
-            value={canProvideDependency}
-            onChange={(e) => setCanProvideDependency(e.target.value)}
+            value={childrenOver20}
+            onChange={(e) => setChildrenOver20(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
             placeholder="0"
             min="0"
             max="10"
           />
-          <p className="text-xs text-gray-500 mt-1">現在国民健康保険を個別に支払っている扶養可能な家族の人数</p>
         </motion.div>
+
+        <AnimatePresence>
+          {parseInt(childrenOver20) > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              whileHover={{ scale: 1.01 }} 
+              className="bg-white p-4 rounded-lg shadow-sm"
+            >
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={childrenOver20InDependent}
+                  onChange={(e) => setChildrenOver20InDependent(e.target.checked)}
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  20歳以上の子供を扶養に入れる（年収130万円未満の場合）
+                </span>
+              </label>
+              <p className="text-xs text-gray-500 mt-1">学生や無職の成人子供を扶養に入れる場合はチェック</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div whileHover={{ scale: 1.01 }} className="bg-white p-4 rounded-lg shadow-sm">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            その他の扶養可能な家族の人数（両親など）
+          </label>
+          <input
+            type="number"
+            value={otherDependents}
+            onChange={(e) => setOtherDependents(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+            placeholder="0"
+            min="0"
+            max="10"
+          />
+          <p className="text-xs text-gray-500 mt-1">現在国民健康保険を個別に支払っている家族の人数</p>
+        </motion.div>
+
+        <AnimatePresence>
+          {parseInt(otherDependents) > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              whileHover={{ scale: 1.01 }} 
+              className="bg-white p-4 rounded-lg shadow-sm"
+            >
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={otherDependentsInDependent}
+                  onChange={(e) => setOtherDependentsInDependent(e.target.checked)}
+                  className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  これらの家族を事業主共生連の扶養に入れる
+                </span>
+              </label>
+              <p className="text-xs text-gray-500 mt-1">扶養に入れることで家族の国民健康保険料が不要になります</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
 };
 
 // 計算ロジック
-const calculateInsurance = (income, age, taxReturnType, spouse, spouseAge, childrenOver20InDependentRange) => {
+const calculateInsurance = (income, age, taxReturnType, spouse, spouseAge, spouseInDependent, childrenUnder20, childrenOver20InDependent) => {
   const taxDeduction = calculateTaxDeduction(taxReturnType);
   const incomeAfterDeduction = Math.max(0, income - taxDeduction);
   const kokuhoBase = Math.max(0, incomeAfterDeduction - CONSTANTS.BASIC_DEDUCTION_RESIDENT);
   
-  // 世帯人数の計算
-  const householdSize = 1 + (spouse ? 1 : 0) + parseInt(childrenOver20InDependentRange || 0);
+  // 世帯人数の計算（国保計算用）
+  const householdSize = 1 + 
+    (spouse && !spouseInDependent ? 1 : 0) + 
+    parseInt(childrenUnder20 || 0) + 
+    (childrenOver20InDependent ? parseInt(childrenOver20InDependent) : 0);
   
   // 軽減判定
   let reductionRate = 0;
@@ -337,7 +432,10 @@ const calculateInsurance = (income, age, taxReturnType, spouse, spouseAge, child
   const support = supportIncome + supportCapita;
   
   // 介護分（40-64歳の人数）
-  const kaigoEligibleCount = [age >= 40 && age < 65, spouse && parseInt(spouseAge) >= 40 && parseInt(spouseAge) < 65].filter(Boolean).length;
+  const kaigoEligibleCount = [
+    age >= 40 && age < 65, 
+    spouse && !spouseInDependent && parseInt(spouseAge) >= 40 && parseInt(spouseAge) < 65
+  ].filter(Boolean).length;
   const nursingIncome = kaigoEligibleCount > 0 
     ? Math.min(kokuhoBase * CONSTANTS.TOKYO_RATES.nursing.incomeRate, CONSTANTS.TOKYO_RATES.nursing.maxAmount) 
     : 0;
@@ -347,13 +445,19 @@ const calculateInsurance = (income, age, taxReturnType, spouse, spouseAge, child
   // 国保合計（上限適用）
   const kokuhoTotal = Math.min(medical + support + nursing, CONSTANTS.TOKYO_RATES.totalMaxAmount);
   
-  // 国民年金
-  const pensionCount = [age < 60, spouse && parseInt(spouseAge) < 60].filter(Boolean).length + 
-    parseInt(childrenOver20InDependentRange || 0);
+  // 国民年金（60歳未満の人数）
+  const pensionCount = [
+    age < 60, 
+    spouse && !spouseInDependent && parseInt(spouseAge) < 60,
+    ...(childrenOver20InDependent ? Array(parseInt(childrenOver20InDependent)).fill(true) : [])
+  ].filter(Boolean).length;
   const pension = CONSTANTS.PENSION_MONTHLY * 12 * pensionCount;
   
   // 65歳以上の介護保険料
-  const over65Count = [age >= 65, spouse && parseInt(spouseAge) >= 65].filter(Boolean).length;
+  const over65Count = [
+    age >= 65, 
+    spouse && !spouseInDependent && parseInt(spouseAge) >= 65
+  ].filter(Boolean).length;
   const over65Kaigo = CONSTANTS.KAIGO_65_OVER_YEARLY * over65Count;
   
   return {
@@ -498,10 +602,10 @@ const ResultsDisplay = ({ results, onPrint }) => {
           </div>
           
           <div className="flex justify-between items-center">
-            <span>家族の追加保険料</span>
+            <span>扶養家族</span>
             <span className="font-semibold">
-              {results.dependentFamilyCount > 0 
-                ? `含まれています（${results.dependentFamilyCount}人分）` 
+              {results.dependentCount > 0 
+                ? `${results.dependentCount}人（追加費用なし）` 
                 : 'なし'}
             </span>
           </div>
@@ -523,6 +627,17 @@ const ResultsDisplay = ({ results, onPrint }) => {
             <li>• 家族の扶養追加可能</li>
           </ul>
         </div>
+
+        {results.dependentDetails && results.dependentDetails.length > 0 && (
+          <div className="mt-4 p-3 bg-white bg-opacity-10 rounded-lg">
+            <p className="text-sm mb-2">扶養に入れる家族:</p>
+            <ul className="text-sm space-y-1">
+              {results.dependentDetails.map((detail, index) => (
+                <li key={index}>• {detail}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </motion.div>
 
       <motion.div 
@@ -552,7 +667,7 @@ const ResultsDisplay = ({ results, onPrint }) => {
           {isBetter ? '節約' : '増加'}になります
         </p>
 
-        {results.dependentFamilyCount > 0 && (
+        {results.additionalSavings > 0 && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -561,7 +676,7 @@ const ResultsDisplay = ({ results, onPrint }) => {
           >
             <p className="text-sm text-blue-800">
               <Info className="w-4 h-4 inline mr-1" />
-              さらに{results.dependentFamilyCount}人の扶養家族分の国民健康保険料（推定年額¥{formatNumber(results.dependentFamilySavings)}）も不要になります！
+              さらに扶養家族の国民健康保険料（推定年額¥{formatNumber(results.additionalSavings)}）も不要になります！
             </p>
           </motion.div>
         )}
@@ -610,8 +725,12 @@ const SocialInsuranceCalculator = () => {
   const [spouse, setSpouse] = useState(false);
   const [spouseAge, setSpouseAge] = useState('');
   const [spouseIncome, setSpouseIncome] = useState('');
-  const [childrenOver20InDependentRange, setChildrenOver20InDependentRange] = useState('0');
-  const [canProvideDependency, setCanProvideDependency] = useState('0');
+  const [spouseInDependent, setSpouseInDependent] = useState(false);
+  const [childrenUnder20, setChildrenUnder20] = useState('');
+  const [childrenOver20, setChildrenOver20] = useState('');
+  const [childrenOver20InDependent, setChildrenOver20InDependent] = useState(false);
+  const [otherDependents, setOtherDependents] = useState('');
+  const [otherDependentsInDependent, setOtherDependentsInDependent] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
@@ -636,25 +755,57 @@ const SocialInsuranceCalculator = () => {
       const spouseRangeInfo = getSpouseRangeInfo(spouse, spouseIncome, spouseAge);
       const spouseInRange = spouse && spouseRangeInfo?.isInRange;
       
+      // 扶養に入れる人数をカウント
+      const childrenOver20InDependentCount = childrenOver20InDependent ? parseInt(childrenOver20 || 0) : 0;
+      
       const current = calculateInsurance(
         incomeNum, 
         ageNum, 
         adjustedTaxReturnType, 
-        spouseInRange,
+        spouse && !spouseInDependent,
         spouseAge,
-        childrenOver20InDependentRange
+        spouseInDependent,
+        childrenUnder20,
+        childrenOver20InDependentCount
       );
       
-      const hasFamily = spouse || parseInt(childrenOver20InDependentRange) > 0;
+      // 扶養家族の詳細
+      const dependentDetails = [];
+      let dependentCount = 0;
+      
+      if (spouseInDependent && spouseInRange) {
+        dependentDetails.push('配偶者');
+        dependentCount++;
+      }
+      
+      const childrenUnder20Count = parseInt(childrenUnder20 || 0);
+      if (childrenUnder20Count > 0) {
+        dependentDetails.push(`子供（20歳未満）${childrenUnder20Count}人`);
+        dependentCount += childrenUnder20Count;
+      }
+      
+      if (childrenOver20InDependent && childrenOver20InDependentCount > 0) {
+        dependentDetails.push(`子供（20歳以上）${childrenOver20InDependentCount}人`);
+        dependentCount += childrenOver20InDependentCount;
+      }
+      
+      const otherDependentsCount = otherDependentsInDependent ? parseInt(otherDependents || 0) : 0;
+      if (otherDependentsCount > 0) {
+        dependentDetails.push(`その他の家族 ${otherDependentsCount}人`);
+        dependentCount += otherDependentsCount;
+      }
+      
+      // 事業主共生連の料金
+      const hasFamily = dependentCount > 0 || (spouse && !spouseInDependent);
       const jigyonushiMonthly = hasFamily ? CONSTANTS.JIGYONUSHI.FAMILY : CONSTANTS.JIGYONUSHI.SINGLE;
       const jigyonushiYearly = jigyonushiMonthly * 12;
       
       const differenceYearly = current.total - jigyonushiYearly;
       const differenceMonthly = Math.round(differenceYearly / 12);
       
-      const dependentFamilyCount = parseInt(canProvideDependency) || 0;
+      // 扶養に入れることによる追加の節約額
       const avgKokuhoPerPerson = 100000;
-      const dependentFamilySavings = dependentFamilyCount * avgKokuhoPerPerson;
+      const additionalSavings = otherDependentsCount * avgKokuhoPerPerson;
       
       setResults({
         current,
@@ -667,8 +818,9 @@ const SocialInsuranceCalculator = () => {
           differenceMonthly,
           isJigyonushiBetter: differenceYearly > 0
         },
-        dependentFamilyCount,
-        dependentFamilySavings
+        dependentCount,
+        dependentDetails,
+        additionalSavings
       });
     } catch (err) {
       setError('計算中にエラーが発生しました。入力内容を確認してください。');
@@ -739,10 +891,18 @@ const SocialInsuranceCalculator = () => {
           setSpouseAge={setSpouseAge}
           spouseIncome={spouseIncome}
           setSpouseIncome={setSpouseIncome}
-          childrenOver20InDependentRange={childrenOver20InDependentRange}
-          setChildrenOver20InDependentRange={setChildrenOver20InDependentRange}
-          canProvideDependency={canProvideDependency}
-          setCanProvideDependency={setCanProvideDependency}
+          spouseInDependent={spouseInDependent}
+          setSpouseInDependent={setSpouseInDependent}
+          childrenUnder20={childrenUnder20}
+          setChildrenUnder20={setChildrenUnder20}
+          childrenOver20={childrenOver20}
+          setChildrenOver20={setChildrenOver20}
+          childrenOver20InDependent={childrenOver20InDependent}
+          setChildrenOver20InDependent={setChildrenOver20InDependent}
+          otherDependents={otherDependents}
+          setOtherDependents={setOtherDependents}
+          otherDependentsInDependent={otherDependentsInDependent}
+          setOtherDependentsInDependent={setOtherDependentsInDependent}
         />
 
         <AnimatePresence>
