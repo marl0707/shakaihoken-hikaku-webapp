@@ -1197,6 +1197,25 @@ function SocialInsuranceCalculator() {
         individualInsurance.children.push(childInsurance);
       }
       
+      // 個人別保険料の合計を計算して調整
+      let individualTotal = individualInsurance.self.total;
+      if (individualInsurance.spouse) {
+        individualTotal += individualInsurance.spouse.total;
+      }
+      individualInsurance.children.forEach(child => {
+        individualTotal += child.total;
+      });
+      
+      // 世帯合計との差額を計算
+      const difference = healthInsuranceYearly - individualTotal;
+      
+      // 差額がある場合は本人に調整（世帯主が差額を負担）
+      if (difference !== 0) {
+        individualInsurance.self.total += difference;
+        // 医療分に差額を加算（最も金額が大きい項目）
+        individualInsurance.self.medical += difference;
+      }
+      
       // 国民年金計算
       const pensionYearly = (userAge >= 20 && userAge < 60) ? CONSTANTS.PENSION_MONTHLY * 12 : 0;
       const spousePensionYearly = (spouse && userSpouseAge >= 20 && userSpouseAge < 60) ? CONSTANTS.PENSION_MONTHLY * 12 : 0;
